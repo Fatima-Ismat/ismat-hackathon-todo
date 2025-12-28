@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rev-parse:*)",
+      "Bash(ls:*)",
+      "Bash(python -m pytest:*)"
+    ]
+  }
+}
