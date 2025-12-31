@@ -15,6 +15,22 @@
 - Console menu interface (1-6 options)
 - UTF-8 encoding support
 
+## REPOSITORY STRUCTURE
+- phase-1/: Python 3.12 console app (completed)
+- phase-2/: Full-stack web app (Next.js + FastAPI + Neon)
+- phase-3/: AI Chatbot (Future)
+- phase-4/: Kubernetes deployment (Future)
+- phase-5/: Cloud deployment (Future)
+
+## PHASE 2 REQUIREMENTS
+- Python 3.13+ with UV package manager
+- Next.js 16+ frontend
+- FastAPI backend with SQLModel
+- Neon PostgreSQL database
+- Better Auth with JWT tokens
+- Reusable Intelligence: Agent Skills + Subagents (+200 bonus)
+- MCP server setup for task tools
+
 ## FIRST PROMPT TO EXECUTE
 After reading this file, please:
 1. Review the constitution and specifications

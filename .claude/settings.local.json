@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git rev-parse:*)",
       "Bash(ls:*)",
-      "Bash(python -m pytest:*)"
+      "Bash(python -m pytest:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }
