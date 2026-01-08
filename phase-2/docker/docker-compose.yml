@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: hackathon-todo-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hackathon_todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hackathon-network
+
+  # Backend API (FastAPI)
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: hackathon-todo-api
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/hackathon_todo"
+      JWT_SECRET: "your-secret-key-change-in-production"
+      JWT_ALGORITHM: "HS256"
+      JWT_EXPIRY_MINUTES: 60
+      REFRESH_TOKEN_EXPIRY_DAYS: 30
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:3001,http://frontend:3000"
+      DEBUG: "false"
+      MCP_ENABLED: "true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - hackathon-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: hackathon-todo-web
+    environment:
+      NEXT_PUBLIC_API_URL: "http://backend:8000"
+      NODE_ENV: "development"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend:/app
+      - /app/.next
+    command: npm run dev
+    networks:
+      - hackathon-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MCP Server (optional, for AI integration)
+  mcp-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: hackathon-todo-mcp
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/hackathon_todo"
+      JWT_SECRET: "your-secret-key-change-in-production"
+      MCP_HOST: "0.0.0.0"
+      MCP_PORT: "8001"
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+      - backend
+    networks:
+      - hackathon-network
+    profiles:
+      - with-mcp
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  hackathon-network:
+    driver: bridge

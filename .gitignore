@@ -27,13 +27,6 @@ ENV/
 env/
 .venv
 
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-*.cover
-.hypothesis/
-
 # IDEs
 .vscode/
 .idea/
@@ -50,3 +43,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Large generated files
+full_project_code.txt
