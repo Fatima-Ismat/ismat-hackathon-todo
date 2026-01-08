@@ -6,6 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  output: 'export',
+  basePath: '/ismat-hackathon-todo',
+  trailingSlash: true,
 }
 
 export default nextConfig
